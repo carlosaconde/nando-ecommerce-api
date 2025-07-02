@@ -1,9 +1,9 @@
 -- CreateTable
-CREATE TABLE "product" (
+CREATE TABLE "Product" (
     "id" SERIAL NOT NULL,
     "title" VARCHAR NOT NULL,
     "description" VARCHAR NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
 
-    CONSTRAINT "product_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );
