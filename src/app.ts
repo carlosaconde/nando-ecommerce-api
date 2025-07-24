@@ -1,7 +1,8 @@
 import http from "http";
-import { Server } from "./presentation/server";
+import { Server } from "./shared/infraestructure/routes/server";
+import { envs } from "./shared/config/envs";
 
-(() => {
+(async () => {
   main();
 })();
 
