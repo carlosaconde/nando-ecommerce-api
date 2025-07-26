@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { prisma } from "../../../data/postgres";
+import { prisma } from "../../../../data/postgres";
 
 import { body, validationResult } from "express-validator";
 import { PostProductDto } from "../../application/dtos/PostProduct.dto";

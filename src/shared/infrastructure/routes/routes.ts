@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ProductRoutes } from "../../../products/infrastructure/routes/routes";
+import { ProductRoutes } from "../../../features/products/infrastructure/routes/routes";
 
 export class AppRoutes {
   static get routes(): Router {
