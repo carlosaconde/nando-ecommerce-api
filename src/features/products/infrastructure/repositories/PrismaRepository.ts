@@ -1,5 +1,6 @@
 import { prisma } from "../../../../data/postgres";
 import { CreateProductDto } from "../../application/dtos/CreateProductDto";
+import { UpdateProductDto } from "../../application/dtos/UpdateProductDto";
 import { ProductEntity } from "../../domain/entities/Product.Entity";
 import { IProductRepository } from "../../domain/repositories/Iproduct.repository";
 
@@ -44,6 +45,32 @@ export class PrismaRepository implements IProductRepository {
         throw new Error(`Product with id ${id} not found`);
       }
       return existingProduct;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async update(
+    id: string,
+    productData: UpdateProductDto
+  ): Promise<ProductEntity> {
+    try {
+      const existingProduct = await prisma.product.findUnique({
+        where: { id },
+      });
+      if (!existingProduct) {
+        throw new Error(`Product with id ${id} not found`);
+      }
+      return await prisma.product.update({
+        where: { id: id },
+        data: {
+          name: productData.name,
+
+          price: productData.price,
+          description: productData.description,
+          stock: productData.stock,
+        },
+      });
     } catch (error) {
       throw error;
     }

@@ -7,6 +7,7 @@ import { CreateProductUseCase } from "../../application/use-cases/CreateProductU
 import { GetAllProductsUseCase } from "../../application/use-cases/GetAllProductsUseCase/GetAllProductsUseCase";
 import { DeleteProductUseCase } from "../../application/use-cases/DeleteProductUseCase/DeleteProductUseCase";
 import { GetOneByIdUseCase } from "../../application/use-cases/GetOneByIdUseCase/GetOneByIdUseCase";
+import { UpdateProductUseCase } from "../../application/use-cases/UpdateProductUseCase/UpdateProductUseCase";
 
 const ProductRouter = Router();
 
@@ -16,12 +17,14 @@ const createProductUseCase = new CreateProductUseCase(productRepository);
 const getAllProductUseCase = new GetAllProductsUseCase(productRepository);
 const deleteProductUseCase = new DeleteProductUseCase(productRepository);
 const getOneByIdUseCAse = new GetOneByIdUseCase(productRepository);
+const updateProductUseCase = new UpdateProductUseCase(productRepository);
 
 const productController = new ProductController(
   createProductUseCase,
   getAllProductUseCase,
   deleteProductUseCase,
-  getOneByIdUseCAse
+  getOneByIdUseCAse,
+  updateProductUseCase
 );
 
 ProductRouter.post("/", (req, res) => productController.create(req, res));
@@ -30,5 +33,6 @@ ProductRouter.delete("/:id", (req, res) =>
   productController.deleteById(req, res)
 );
 ProductRouter.get("/:id", (req, res) => productController.getOneById(req, res));
+ProductRouter.put("/:id", (req, res) => productController.update(req, res));
 
 export default ProductRouter;
