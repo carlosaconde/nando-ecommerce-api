@@ -1,12 +1,8 @@
 import { Router } from "express";
-import { ProductRoutes } from "../../../features/products/infrastructure/routes/routes";
+import ProductRouter from "../../../features/products/infrastructure/routes/ProductRouter";
 
-export class AppRoutes {
-  static get routes(): Router {
-    const router = Router();
+const ApiRouter = Router();
 
-    router.use("/api/products", ProductRoutes.routes);
+ApiRouter.use("/api/products", ProductRouter);
 
-    return router;
-  }
-}
+export default ApiRouter;

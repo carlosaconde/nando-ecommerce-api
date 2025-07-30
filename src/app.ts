@@ -1,5 +1,5 @@
 import http from "http";
-import { Server } from "./shared/infraestructure/routes/server";
+import { Server } from "./shared/infrastructure/routes/server";
 import { envs } from "./shared/config/envs";
 
 (async () => {

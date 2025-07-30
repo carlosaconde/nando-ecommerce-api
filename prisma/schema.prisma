@@ -8,35 +8,21 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
-model Brand {
-  id          String    @id @default(cuid())
-  name        String
-  description String
-  active      Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  // Relación con productos
-  products    Product[]
-}
 
 model Product {
-  id          Int      @id @default(autoincrement())
+  id          String      @id @default(cuid())
   name        String
   description String
   price       Float
-  urls        String   // Si necesitas múltiples URLs, considera usar String[]
-  category    String
+  urls        String[]   
+  category    String[]
   stock       Int
   isNew       Boolean  @default(false)
-  color       String[] // Array de colores
-  size        String[] // Array de tallas
+  color       String[] 
+  size        String[] 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
-  // Relación con marca
-  brandId     String
-  brand       Brand    @relation(fields: [brandId], references: [id])
   
   @@map("products") // Nombre de la tabla en la base de datos
 }

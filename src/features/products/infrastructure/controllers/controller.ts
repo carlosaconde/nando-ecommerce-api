@@ -1,40 +1,52 @@
 import { Request, Response } from "express";
-import { prisma } from "../../../../data/postgres";
-
-import { body, validationResult } from "express-validator";
-import { PostProductDto } from "../../application/dtos/PostProduct.dto";
+import { CreateProductUseCase } from "../../application/use-cases/CreateProductUseCase/CreateProductUseCase";
+import { GetAllProductsUseCase } from "../../application/use-cases/GetAllProductsUseCase/GetAllProductsUseCase";
+import { DeleteProductUseCase } from "../../application/use-cases/DeleteProductUseCase/DeleteProductUseCase";
+import { GetOneByIdUseCase } from "../../application/use-cases/GetOneByIdUseCase/GetOneByIdUseCase";
 
 export class ProductController {
-  constructor() {}
+  constructor(
+    private readonly createProductUseCase: CreateProductUseCase,
+    private readonly getAllProductsUseCase: GetAllProductsUseCase,
+    private readonly deleteProductUseCase: DeleteProductUseCase,
+    private readonly getOneByIdUseCase: GetOneByIdUseCase
+  ) {}
 
-  public getProducts = async (req: Request, res: Response) => {
-    const products = await prisma.product.findMany();
-
-    res.json(products);
-  };
-
-  public postProducts = async (req: Request, res: Response) => {
-    const [error, postProductDto] = PostProductDto.create(req.body);
-    if (error) {
-      return res.status(400).json({ error });
+  async create(req: Request, res: Response) {
+    try {
+      const product = await this.createProductUseCase.execute(req.body);
+      res.status(201).json(product);
+    } catch (error) {
+      throw error;
     }
+  }
 
-    // Asegúrate de que postProductDto tenga todas las propiedades necesarias
-    const { name, description, price, urls, category, stock, brand } =
-      postProductDto!;
+  async getAll(req: Request, res: Response) {
+    try {
+      const products = await this.getAllProductsUseCase.execute();
+      res.status(200).json(products);
+    } catch (error) {
+      throw error;
+    }
+  }
 
-    const product = await prisma.product.create({
-      data: {
-        name,
-        description,
-        price,
-        urls,
-        category,
-        stock,
-        brand: { connect: { id: brand } },
-      },
-    });
+  async deleteById(req: Request, res: Response) {
+    try {
+      const deleteProduct = await this.deleteProductUseCase.execute(
+        req.params.id
+      );
+      res.status(200).json("registro eliminado");
+    } catch (error) {
+      res.status(404).json("id not found");
+    }
+  }
 
-    res.json(product);
-  };
+  async getOneById(req: Request, res: Response) {
+    try {
+      const product = await this.getOneByIdUseCase.execute(req.params.id);
+      res.status(200).json(product);
+    } catch (error) {
+      res.status(404).json("id not found");
+    }
+  }
 }
