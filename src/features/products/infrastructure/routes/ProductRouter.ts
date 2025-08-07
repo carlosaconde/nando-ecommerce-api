@@ -8,6 +8,11 @@ import { GetAllProductsUseCase } from "../../application/use-cases/GetAllProduct
 import { DeleteProductUseCase } from "../../application/use-cases/DeleteProductUseCase/DeleteProductUseCase";
 import { GetOneByIdUseCase } from "../../application/use-cases/GetOneByIdUseCase/GetOneByIdUseCase";
 import { UpdateProductUseCase } from "../../application/use-cases/UpdateProductUseCase/UpdateProductUseCase";
+import { validateSchema } from "../../../../shared/infrastructure/middleware/ValidateSchema";
+import {
+  createProductSchema,
+  CreateProductRequest,
+} from "../schemas/Product.schema";
 
 const ProductRouter = Router();
 
@@ -27,7 +32,11 @@ const productController = new ProductController(
   updateProductUseCase
 );
 
-ProductRouter.post("/", (req, res) => productController.create(req, res));
+ProductRouter.post(
+  "/",
+  validateSchema(createProductSchema),
+  productController.create
+);
 ProductRouter.get("/", (req, res) => productController.getAll(req, res));
 ProductRouter.delete("/:id", (req, res) =>
   productController.deleteById(req, res)

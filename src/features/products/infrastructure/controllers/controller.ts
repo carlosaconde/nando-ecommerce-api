@@ -1,9 +1,10 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { CreateProductUseCase } from "../../application/use-cases/CreateProductUseCase/CreateProductUseCase";
 import { GetAllProductsUseCase } from "../../application/use-cases/GetAllProductsUseCase/GetAllProductsUseCase";
 import { DeleteProductUseCase } from "../../application/use-cases/DeleteProductUseCase/DeleteProductUseCase";
 import { GetOneByIdUseCase } from "../../application/use-cases/GetOneByIdUseCase/GetOneByIdUseCase";
 import { UpdateProductUseCase } from "../../application/use-cases/UpdateProductUseCase/UpdateProductUseCase";
+import { httpResponse } from "../../../../shared/infrastructure/utils/HttpResponse";
 
 export class ProductController {
   constructor(
@@ -14,53 +15,77 @@ export class ProductController {
     private readonly updateProductUseCase: UpdateProductUseCase
   ) {}
 
-  async create(req: Request, res: Response) {
+  create = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const product = await this.createProductUseCase.execute(req.body);
-      res.status(201).json(product);
+      httpResponse.created(res, product);
     } catch (error) {
-      throw error;
+      next(error);
     }
-  }
+  };
 
-  async getAll(req: Request, res: Response) {
+  getAll = async (req: Request, res: Response) => {
+    const { page = 1, limit = 10, name } = req.query;
+
     try {
-      const products = await this.getAllProductsUseCase.execute();
-      res.status(200).json(products);
+      const pageNum = +page;
+      const limitNum = +limit;
+      const paginationParams = {
+        page: pageNum,
+        limit: limitNum,
+        name: typeof name === "string" ? name : undefined,
+      };
+      const products = await this.getAllProductsUseCase.execute(
+        paginationParams
+      );
+      httpResponse.success(res, products);
     } catch (error) {
       throw error;
     }
-  }
+  };
 
-  async deleteById(req: Request, res: Response) {
+  deleteById = async (req: Request, res: Response) => {
     try {
       const deleteProduct = await this.deleteProductUseCase.execute(
         req.params.id
       );
-      res.status(200).json("registro eliminado");
+      if (!deleteProduct) {
+        httpResponse.notFound(res, "id not found");
+      }
+      httpResponse.success(res, deleteProduct);
     } catch (error) {
-      res.status(404).json("id not found");
+      httpResponse.internalServer(res);
     }
-  }
+  };
 
-  async getOneById(req: Request, res: Response) {
+  getOneById = async (req: Request, res: Response) => {
     try {
       const product = await this.getOneByIdUseCase.execute(req.params.id);
-      res.status(200).json(product);
+      if (!product) {
+        httpResponse.notFound(res, "id not found");
+      }
+      httpResponse.success(res, product);
     } catch (error) {
-      res.status(404).json("id not found");
+      httpResponse.internalServer(res);
     }
-  }
+  };
 
-  async update(req: Request, res: Response) {
+  update = async (req: Request, res: Response) => {
     try {
       const product = await this.updateProductUseCase.execute(
         req.params.id,
         req.body
       );
-      res.status(201).json(product);
+      if (!product) {
+        httpResponse.notFound(res, "id not found");
+      }
+      httpResponse.created(res, product);
     } catch (error) {
-      res.status(404).json("id not found");
+      httpResponse.internalServer(res);
     }
-  }
+  };
 }
